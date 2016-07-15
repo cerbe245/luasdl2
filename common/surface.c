@@ -703,7 +703,32 @@ l_surface_setColorMod(lua_State *L)
 
 	return commonPush(L, "b", 1);
 }
-
+/*****MODIFICATION 1 START*****/
+/* 
+ * Surface:setColorKeyAsColor(flag,color)
+ * 
+ * Params:
+ *	flag the flag
+ *	key the color
+ *	unlike Surface:setColorKey, color is really a color, not a colorkey.
+ *
+ * Returns:
+ *	True on success or false
+ *	The error message
+ */
+static int
+l_surface_setColorKeyAsColor(lua_State *L)
+{
+	SDL_Surface *surf = commonGetAs(L, 1, SurfaceName, SDL_Surface *);
+	SDL_Color color = videoGetColorRGB(L, 3);
+	int flag=lua_toboolean(L, 2);
+	Uint32 colorkey=SDL_MapRGB(surf->format, color.r,color.g,color.b);
+	if (SDL_SetColorKey(surf, flag, colorkey) < 0){
+		return commonPushSDLError(L, 1);
+	};
+	return commonPush(L, "b", 1);
+}
+/*****MODIFICATION 1 END*****/
 /*
  * Surface:setPalette(colors)
  *
@@ -821,32 +846,6 @@ l_surface_getRawPixel(lua_State *L)
 	lua_pushlstring(L, ptr, size);
 	return 1;
 }
-/*****MODIFICATION 1 START*****/
-/* 
- * Surface:setColorKeyAsColor(flag,color)
- * 
- * Params:
- *	flag the flag
- *	key the color
- *	unlike Surface:setColorKey, color is really a color, not a colorkey.
- *
- * Returns:
- *	True on success or false
- *	The error message
- */
-static int
-l_surface_setColorKeyAsColor(lua_State *L)
-{
-	SDL_Surface *surf = commonGetAs(L, 1, SurfaceName, SDL_Surface *);
-	SDL_Color color = videoGetColorRGB(L, 3);
-	int flag=lua_toboolean(L, 2);
-	Uint32 colorkey=SDL_MapRGB(surf->format, color.r,color.g,color.b);
-	if (SDL_SetColorKey(surf, flag, colorkey) < 0){
-		return commonPushSDLError(L, 1);
-	};
-	return commonPush(L, "b", 1);
-}
-/*****MODIFICATION 1 END*****/
 static const luaL_Reg methods[] = {
 	{ "blit",		l_surface_blit			},
 	{ "blitScaled",		l_surface_blitScaled		},
