@@ -742,6 +742,7 @@ l_surface_setColorMod(lua_State *L)
  * Params:
  *	flag the flag
  *	key the color
+ *	exact_color if false (default) the closest matching color in the palette will be
  *	unlike Surface:setColorKey, color is really a color, not a colorkey.
  *
  * Returns:
@@ -754,9 +755,25 @@ l_surface_setColorKeyAsColor(lua_State *L)
 	SDL_Surface *surf = commonGetAs(L, 1, SurfaceName, SDL_Surface *);
 	SDL_Color color = videoGetColorRGB(L, 3);
 	int flag=lua_toboolean(L, 2);
-	Uint32 colorkey=SDL_MapRGB(surf->format, color.r,color.g,color.b);
-	if (SDL_SetColorKey(surf, flag, colorkey) < 0){
-		return commonPushSDLError(L, 1);
+	int exact_color=lua_toboolean(L, 4);
+	int i;
+	Uint32 colorkey=-1;
+	if (exact_color) {
+		SDL_Palette *palette=surf->format->palette;
+		if(!palette){return commonPushSDLError(L, 1);};
+		SDL_Color *paletteColor=&palette->colors[0];
+		for (i=0;i<palette->ncolors;i++){
+			if (paletteColor->r==color.r && paletteColor->g==color.g && paletteColor->b==color.b){
+				exact_color=0;break;
+			};
+			paletteColor++;
+		};
+	};
+	if (!exact_color) {
+		colorkey=SDL_MapRGB(surf->format, color.r,color.g,color.b);
+		if (SDL_SetColorKey(surf, flag, colorkey) < 0){
+			return commonPushSDLError(L, 1);
+		};
 	};
 	return commonPush(L, "b", 1);
 }
