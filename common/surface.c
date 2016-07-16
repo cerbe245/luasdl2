@@ -567,7 +567,7 @@ l_surface_replaceColors(lua_State *L)
 	SDL_Palette *palette=surf->format->palette;
 	if(!palette){return commonPushSDLError(L, 1);};
 	SDL_Color *paletteColor=&palette->colors[0];
-	for (i=1;i<palette->ncolors;i++){
+	for (i=0;i<palette->ncolors;i++){
 		/*maybe you can use MapRGB instead of the loop, but i'm not sure*/
 		if (paletteColor->r==replacedColor.r && paletteColor->g==replacedColor.g && paletteColor->b==replacedColor.b && paletteColor->a==replacedColor.a){
 			paletteColor->r=replacementColor.r;
