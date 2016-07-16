@@ -547,7 +547,39 @@ l_surface_mustLock(lua_State *L)
 
 	return commonPush(L, "b", SDL_MUSTLOCK(surf));
 }
-
+/*****MODIFICATION 3 START*****/
+/*
+ * Surface:replaceColors(replacedColor,replacementColor)
+ *
+ * Params:
+ *	replacedColor the color that will be replaced
+ *	replacementColor the color the replacedColor will be replaced with
+ * Returns
+ *	True or false
+ */
+static int
+l_surface_replaceColors(lua_State *L)
+{
+	int i;
+	SDL_Surface *surf = commonGetAs(L, 1, SurfaceName, SDL_Surface *);
+	SDL_Color replacedColor = videoGetColorRGB(L, 2);
+	SDL_Color replacementColor = videoGetColorRGB(L, 3);
+	SDL_Palette *palette=surf->format->palette;
+	if(!palette){return commonPushSDLError(L, 1);};
+	SDL_Color *paletteColor=&palette->colors[0];
+	for (i=1;i<palette->ncolors;i++){
+		/*maybe you can use MapRGB instead of the loop, but i'm not sure*/
+		if (paletteColor->r==replacedColor.r && paletteColor->g==replacedColor.g && paletteColor->b==replacedColor.b && paletteColor->a==replacedColor.a){
+			paletteColor->r=replacementColor.r;
+			paletteColor->g=replacementColor.g;
+			paletteColor->b=replacementColor.b;
+			paletteColor->a=replacementColor.a;
+		}
+		paletteColor++;
+	}
+	return commonPush(L, "b", 1);
+}
+/*****MODIFICATION 3 END*****/
 /*
  * Surface:saveBMP(path)
  *
@@ -864,6 +896,9 @@ static const luaL_Reg methods[] = {
 	{ "lowerBlit",		l_surface_lowerBlit		},
 	{ "lowerBlitScaled",	l_surface_lowerBlitScaled	},
 	{ "mustLock",		l_surface_mustLock		},
+/*****MODIFICATION 4 START*****/
+	{ "replaceColors",	l_surface_replaceColors		}, 
+/*****MODIFICATION 4 END*****/
 	{ "saveBMP",		l_surface_saveBMP		},
 	{ "saveBMP_RW",		l_surface_saveBMP_RW		},
 	{ "setClipRect",	l_surface_setClipRect		},
