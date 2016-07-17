@@ -139,6 +139,16 @@ SDL_Color
 videoGetColorRGB(lua_State *L, int index);
 
 /**
+ * Get a color from a Lua table or a hexadecimal number.
+ *
+ * @param L the Lua state
+ * @param index the value index
+ * @return the color as RGBA structure
+ */
+SDL_Color
+videoGetColorRGBA(lua_State *L, int index);
+
+/**
  * Read colors from Lua and sets them to the colors array as SDL_Color
  * structure.
  *

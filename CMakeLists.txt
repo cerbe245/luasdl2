@@ -174,6 +174,7 @@ option(WITH_IMAGE "Enable SDL_image" On)
 option(WITH_MIXER "Enable SDL_mixer" On)
 option(WITH_TTF "Enable SDL_ttf" On)
 option(WITH_NET "Enable SDL_net" On)
+option(WITH_EXT "Enable SDL_ext" On)
 
 if (WITH_IMAGE)
 	add_subdirectory(sdl-image)
@@ -190,6 +191,10 @@ endif ()
 if (WITH_NET)
 	add_subdirectory(sdl-net)
 endif ()
+
+if (WITH_EXT)
+  add_subdirectory(ext)
+endif()
 
 # For the examples and tutorials
 add_subdirectory(examples)
@@ -211,7 +216,7 @@ if (WIN32)
 	else ()
 		set(WINARCH "x86")
 	endif ()
-	
+
 	if (MINGW)
 		set(GENERATOR "MinGW")
 	else ()

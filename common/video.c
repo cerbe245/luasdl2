@@ -232,6 +232,28 @@ videoGetColorRGB(lua_State *L, int index)
 	return c;
 }
 
+SDL_Color
+videoGetColorRGBA(lua_State *L, int index)
+{
+	SDL_Color c = { 0, 0, 0, 0 };
+
+	if (lua_type(L, index) == LUA_TNUMBER) {
+		int value = lua_tointeger(L, index);
+
+		c.r = ((value >> 16) & 0xFF);
+		c.g = ((value >> 8) & 0xFF);
+		c.b = ((value >> 8) & 0xFF);
+		c.a = ((value) & 0xFF);
+	} else if (lua_type(L, index) == LUA_TTABLE) {
+		c.r = tableGetInt(L, index, "r");
+		c.g = tableGetInt(L, index, "g");
+		c.b = tableGetInt(L, index, "b");
+		c.a = tableGetInt(L, index, "a");
+	}
+
+	return c;
+}
+
 int
 videoGetColorsRGB(lua_State *L, int index, Array *colors)
 {
