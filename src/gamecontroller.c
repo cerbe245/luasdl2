@@ -2,6 +2,7 @@
  * gamecontroller.c -- game controllers event management
  *
  * Copyright (c) 2013, 2014 David Demelier <markand@malikania.fr>
+ * Copyright (c) 2016 Webster Sheets <webster@web-eworks.com>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -17,6 +18,7 @@
  */
 
 #include "gamecontroller.h"
+#include "common/rwops.c"
 
 /* --------------------------------------------------------
  * Gamecontroller functions
@@ -41,6 +43,60 @@ l_gameControllerAddMapping(lua_State *L)
 	ret = SDL_GameControllerAddMapping(mapping);
 	if (ret < 0)
 		return commonPushSDLError(L, 1);
+
+	return commonPush(L, "i", ret);
+}
+
+/*
+ * SDL.gameControllerAddMappingsFromFile(filename)
+ *
+ * Arguments:
+ *	filename the file containing the mappings to load
+ *
+ * Returns:
+ *	The number of mappings loaded, or -1 on error
+ *	The error message
+ */
+static int
+l_gameControllerAddMappingsFromFile(lua_State *L)
+{
+	const char *filename = luaL_checkstring(L, 1);
+	int ret;
+
+#if SDL_VERSION_ATLEAST(2, 0, 2)
+	ret = SDL_GameControllerAddMappingsFromFile(filename);
+	if (ret < 0)
+		return commonPushSDLError(L, 1);
+#else
+	ret = 0;
+#endif
+
+	return commonPush(L, "i", ret);
+}
+
+/*
+ * SDL.gameControllerAddMappingsFromRW(rw)
+ *
+ * Arguments:
+ *	rw the SDL_RWops to load from
+ *
+ * Returns:
+ *	The number of mappings loaded, or -1 on error
+ *	The error message
+ */
+static int
+l_gameControllerAddMappingsFromRW(lua_State *L)
+{
+	SDL_RWops *ops = commonGetAs(L, 1, RWOpsName, SDL_RWops *);
+	int ret;
+
+#if SDL_VERSION_ATLEAST(2, 0, 2)
+	ret = SDL_GameControllerAddMappingsFromRW(ops, 0);
+	if (ret < 0)
+		return commonPushSDLError(L, 1);
+#else
+	ret = 0;
+#endif
 
 	return commonPush(L, "i", ret);
 }
@@ -109,11 +165,15 @@ l_isGameController(lua_State *L)
 }
 
 const luaL_Reg GamectlFunctions[] = {
-	{ "gameControllerAddMapping",	l_gameControllerAddMapping	},
-	{ "gameControllerOpen",		l_gameControllerOpen		},
-	{ "gameControllerNameForIndex",	l_gameControllerNameForIndex	},
-	{ "isGameController",		l_isGameController		},
-	{ NULL,				NULL					}
+	{ "gameControllerAddMapping",		l_gameControllerAddMapping		},
+#if SDL_VERSION_ATLEAST(2, 0, 2)
+	{ "gameControllerAddMappingsFromFile",	l_gameControllerAddMappingsFromFile	},
+	{ "gameControllerAddMappingsFromRW",	l_gameControllerAddMappingsFromRW	},
+#endif
+	{ "gameControllerOpen",			l_gameControllerOpen			},
+	{ "gameControllerNameForIndex",		l_gameControllerNameForIndex		},
+	{ "isGameController",			l_isGameController			},
+	{ NULL,					NULL					}
 };
 
 /* --------------------------------------------------------
