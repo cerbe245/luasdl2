@@ -371,22 +371,6 @@ l_surface_fillRects(lua_State *L)
 	return commonPush(L, "b", ret);
 }
 
-/*
- * Surface:mapRGB()
- *
- * Returns:
- * 	A Uint32 filled with the correct pixel value
- */
-static int
-l_surface_mapRGB(lua_State *L)
-{
-	SDL_Surface *surf = commonGetAs(L, 1, SurfaceName, SDL_Surface *);
-	SDL_Color c = videoGetColorRGB(L, 2);
-
-	lua_pushinteger(L, SDL_MapRGB(surf->format, c.r, c.g, c.b));
-
-	return 1;
-}
 
 /*
  * Surface:mapRGBA()
