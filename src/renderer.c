@@ -195,7 +195,7 @@ rendererDrawOrFillRect(lua_State *L, int draw)
 
 	/* Draw or fill? */
 	UseFunc func = (draw) ? SDL_RenderDrawRect : SDL_RenderFillRect;
-	
+
 	videoGetRect(L, 2, &r);
 
 	if (func(rd, &r) < 0)
@@ -277,7 +277,7 @@ l_renderer_createTextureFromSuface(lua_State *L)
 {
 	SDL_Renderer *rd	= commonGetAs(L, 1, RendererName, SDL_Renderer *);
 	SDL_Surface *surf	= commonGetAs(L, 2, SurfaceName, SDL_Surface *);
-	
+
 	SDL_Texture *tex = SDL_CreateTextureFromSurface(rd, surf);
 	if (tex == NULL)
 		return commonPushSDLError(L, 1);
@@ -396,7 +396,7 @@ l_renderer_copyEx(lua_State *L)
 		pointptr = &point;
 	}
 	lua_pop(L, 1);
-		
+
 	/* Optional flip */
 	flip = tableGetInt(L, 2, "flip");
 
